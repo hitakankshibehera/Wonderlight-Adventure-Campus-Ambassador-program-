@@ -13,15 +13,19 @@ export async function POST(request: Request) {
       );
     }
 
-    const companyEmail = process.env.COMPANY_EMAIL || 'wonderlightadventure@gmail.com';
-    const gmailAppPassword = process.env.GMAIL_APP_PASSWORD || process.env.SMTP_PASSWORD;
+    const companyEmail = (process.env.COMPANY_EMAIL || process.env.EMAIL_FROM || 'wonderlightadventure@gmail.com').trim();
+    const rawPass = process.env.GMAIL_APP_PASSWORD || process.env.SMTP_PASSWORD || '';
+    const cleanPassword = rawPass.replace(/\s+/g, '').trim();
 
     // Configure Nodemailer Transport
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
         user: companyEmail,
-        pass: gmailAppPassword || 'demo_pass_placeholder',
+        pass: cleanPassword || 'demo_pass_placeholder',
+      },
+      tls: {
+        rejectUnauthorized: false,
       },
     });
 

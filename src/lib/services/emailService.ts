@@ -2,10 +2,11 @@ import nodemailer from 'nodemailer';
 import { logEmailTransaction } from './emailLogsStore';
 
 function getTransporter() {
-  const companyEmail = process.env.EMAIL_FROM || process.env.COMPANY_EMAIL || 'wonderlightadventure@gmail.com';
-  const smtpPassword = process.env.SMTP_PASSWORD || process.env.GMAIL_APP_PASSWORD;
+  const companyEmail = (process.env.EMAIL_FROM || process.env.COMPANY_EMAIL || 'wonderlightadventure@gmail.com').trim();
+  const rawPassword = process.env.SMTP_PASSWORD || process.env.GMAIL_APP_PASSWORD || '';
+  const smtpPassword = rawPassword.replace(/\s+/g, '').trim();
   const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
-  const smtpPort = parseInt(process.env.SMTP_PORT || '587', 10);
+  const smtpPort = parseInt(process.env.SMTP_PORT || '465', 10);
 
   if (!smtpPassword || smtpPassword === 'demo_pass_placeholder') {
     return null;
@@ -17,7 +18,10 @@ function getTransporter() {
       service: 'gmail',
       auth: {
         user: companyEmail,
-        pass: smtpPassword.trim(),
+        pass: smtpPassword,
+      },
+      tls: {
+        rejectUnauthorized: false,
       },
     });
   }
@@ -28,7 +32,10 @@ function getTransporter() {
     secure: smtpPort === 465,
     auth: {
       user: companyEmail,
-      pass: smtpPassword.trim(),
+      pass: smtpPassword,
+    },
+    tls: {
+      rejectUnauthorized: false,
     },
   });
 }
