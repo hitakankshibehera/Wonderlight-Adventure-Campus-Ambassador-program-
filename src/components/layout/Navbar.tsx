@@ -9,7 +9,7 @@ import { AuthModal } from '@/components/auth/AuthModal';
 
 export const Navbar: React.FC = () => {
   const pathname = usePathname();
-  const { role, user, logout } = useAuth();
+  const { role, user, logout, hasRole } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
