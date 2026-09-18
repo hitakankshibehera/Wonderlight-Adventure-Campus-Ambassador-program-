@@ -93,6 +93,26 @@ export default function EventDetailsPage() {
         generateQR(registration.qrCodeData);
         setIsRegistering(false);
         setShowRegModal(false);
+
+        // Dispatch Event Registration Confirmation Email
+        try {
+          fetch('/api/events/register-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              studentName: regForm.fullName || 'Attendee',
+              studentEmail: regForm.email,
+              eventName: event.title,
+              date: event.date,
+              time: `${event.startTime} - ${event.endTime}`,
+              venue: event.venue,
+              registrationId: registration.id,
+              college: regForm.college,
+            }),
+          });
+        } catch (emailErr) {
+          console.error('Error dispatching event registration email:', emailErr);
+        }
       } catch (err: any) {
         alert(err.message || 'Registration failed');
         setIsRegistering(false);

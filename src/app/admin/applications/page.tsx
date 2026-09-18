@@ -62,28 +62,33 @@ export default function AdminApplicationsPage() {
   const handleUpdateStatus = async (appId: string, newStatus: ApplicationStatus) => {
     const note = window.prompt(`Enter review note for setting status to ${newStatus}:`, `Applicant moved to ${newStatus}`);
     if (note !== null) {
+      const prevApp = dbService.getApplicantById(appId);
+      const prevStatus = prevApp?.status;
+
       dbService.updateApplicantStatus(appId, newStatus, note, user?.displayName || 'Administrator');
       const updatedApp = dbService.getApplicantById(appId);
       if (selectedApplicant && selectedApplicant.applicationId === appId) {
         setSelectedApplicant(updatedApp || null);
       }
 
-      // If Selected: Dispatch Official Selection Email
-      if (newStatus === 'SELECTED' && updatedApp) {
+      // Dispatch status update email ONLY when status actually changes
+      if (updatedApp && prevStatus !== newStatus) {
         try {
-          await fetch('/api/admin/send-selection-email', {
+          await fetch('/api/admin/send-status-email', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
+              status: newStatus,
               name: updatedApp.fullName,
               email: updatedApp.email,
+              applicationId: updatedApp.applicationId,
               college: updatedApp.college,
-              ambassadorId: updatedApp.ambassadorId || updatedApp.applicationId,
               batch: '2026 Batch',
+              ambassadorId: updatedApp.ambassadorId || updatedApp.applicationId,
             }),
           });
         } catch (e) {
-          console.error('Error dispatching selection email:', e);
+          console.error('Error dispatching status change email:', e);
         }
       }
     }

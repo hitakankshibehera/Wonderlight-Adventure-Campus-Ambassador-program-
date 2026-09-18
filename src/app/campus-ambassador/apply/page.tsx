@@ -173,30 +173,42 @@ export default function ApplicationPage() {
       });
 
       if (!applicant || !applicant.applicationId) {
-        throw new Error('Database record creation failed.');
+        throw new Error('Database record creation failed. Application was not saved.');
       }
 
       setSubmittedApplicationId(applicant.applicationId);
 
-      // Dispatch Confirmation Email (Requirement 15)
+      // Dispatch Confirmation Email after Firestore write succeeds
+      let emailFailed = false;
       try {
-        await fetch('/api/auth/send-application-email', {
+        const emailRes = await fetch('/api/auth/send-application-email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             name: applicant.fullName,
             email: applicant.email,
             applicationId: applicant.applicationId,
+            college: applicant.college,
+            batch: '2026 Batch',
+            date: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+            status: 'SUBMITTED',
           }),
         });
+        const emailData = await emailRes.json();
+        if (!emailRes.ok || !emailData.success) {
+          emailFailed = true;
+          console.warn('[EMAIL WARNING] Application submitted to database but email dispatch failed:', emailData.error);
+        }
       } catch (emailErr) {
-        console.warn('Email notification notice:', emailErr);
+        emailFailed = true;
+        console.warn('[EMAIL WARNING] Network error during application confirmation email dispatch:', emailErr);
       }
 
-      // Redirect to dedicated Application Success Page with confetti (Requirement 11)
-      window.location.href = `/campus-ambassador/application-success?id=${applicant.applicationId}`;
-    } catch (e) {
-      alert('Failed to submit application to database. Please try again.');
+      // Redirect to Application Success Page (application remains SUBMITTED even if email failed)
+      const successUrl = `/campus-ambassador/application-success?id=${applicant.applicationId}${emailFailed ? '&emailNotice=failed' : ''}`;
+      window.location.href = successUrl;
+    } catch (e: any) {
+      alert(e?.message || 'Failed to submit application to database. Please check your data and try again.');
       setIsSubmitting(false);
     }
   };

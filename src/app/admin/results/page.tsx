@@ -108,7 +108,7 @@ export default function AdminResultsPublisherPage() {
 
       const logs: Array<{ name: string; email: string; ambId: string; date: string }> = [];
 
-      selectedApps.forEach((app) => {
+      selectedApps.forEach(async (app) => {
         // Ensure Ambassador is provisioned with unique ID
         dbService.updateApplicantStatus(
           app.applicationId,
@@ -118,12 +118,31 @@ export default function AdminResultsPublisherPage() {
         );
 
         const updatedAmb = dbService.getAmbassadors().find((a) => a.applicationId === app.applicationId);
+        const ambId = updatedAmb?.ambassadorId || app.ambassadorId || 'WLA-001';
+
         logs.push({
           name: app.fullName,
           email: app.email,
-          ambId: updatedAmb?.ambassadorId || app.ambassadorId || 'WLA-001',
+          ambId,
           date: new Date().toLocaleTimeString(),
         });
+
+        // Trigger official selection email dispatch
+        try {
+          await fetch('/api/admin/send-selection-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: app.fullName,
+              email: app.email,
+              college: app.college,
+              ambassadorId: ambId,
+              batch: '2026 Batch',
+            }),
+          });
+        } catch (e) {
+          console.error('Error sending selection email during batch publish:', e);
+        }
       });
 
       // Ensure primary batch is live

@@ -134,13 +134,24 @@ function ApplicationSuccessContent() {
 
           {/* Next Steps Box */}
           <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 text-xs text-left space-y-2 relative z-10">
-            <h4 className="font-bold text-slate-200 flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              <span>Next Steps in Selection Process:</span>
-            </h4>
-            <p className="text-slate-400 leading-relaxed">
-              Our evaluation committee is reviewing your leadership profile. Confirmation details have been sent from <strong className="text-amber-300">wonderlightadventure@gmail.com</strong>.
-            </p>
+            {searchParams?.get('emailNotice') === 'failed' ? (
+              <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-200 text-xs flex items-start gap-2">
+                <Mail className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                <span>
+                  Your application was submitted successfully, but we could not send the confirmation email. Please check your email again later or contact support at <strong className="text-white">wonderlightadventure@gmail.com</strong>.
+                </span>
+              </div>
+            ) : (
+              <>
+                <h4 className="font-bold text-slate-200 flex items-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                  <span>Next Steps in Selection Process:</span>
+                </h4>
+                <p className="text-slate-400 leading-relaxed">
+                  Our evaluation committee is reviewing your leadership profile. Confirmation details have been sent from <strong className="text-amber-300">wonderlightadventure@gmail.com</strong>.
+                </p>
+              </>
+            )}
           </div>
 
           {/* Action Buttons */}

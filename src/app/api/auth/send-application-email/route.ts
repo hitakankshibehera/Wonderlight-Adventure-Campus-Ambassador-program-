@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
-import { sendApplicationReceivedEmail } from '@/lib/services/emailService';
+import { sendApplicationConfirmationEmail } from '@/lib/services/emailService';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, email, applicationId } = body;
+    const { name, email, applicationId, college, batch, date, status } = body;
 
     if (!name || !email || !applicationId) {
       return NextResponse.json(
@@ -13,17 +13,21 @@ export async function POST(request: Request) {
       );
     }
 
-    const res = await sendApplicationReceivedEmail({ name, email, applicationId });
-
-    return NextResponse.json({
-      success: true,
-      simulated: Boolean(res.simulated),
-      message: 'Application received email dispatched successfully.',
+    const res = await sendApplicationConfirmationEmail({
+      name,
+      email,
+      applicationId,
+      college: college || 'University',
+      batch,
+      date,
+      status,
     });
+
+    return NextResponse.json(res);
   } catch (error: any) {
-    console.error('Error sending application email:', error);
+    console.error('Error sending application confirmation email:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to send application email.' },
+      { success: false, error: error?.message || 'Failed to send application confirmation email.' },
       { status: 500 }
     );
   }
