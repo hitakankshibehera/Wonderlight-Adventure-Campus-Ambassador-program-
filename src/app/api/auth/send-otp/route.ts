@@ -51,13 +51,9 @@ export async function POST(request: Request) {
       );
     }
 
-    // Always include devOtp so user can verify immediately with 1-click auto-fill
     return NextResponse.json({
       success: true,
-      message: 'Verification code sent',
-      simulated: Boolean(emailResult.simulated),
-      devOtp: otp,
-      otp: otp,
+      message: 'Verification code sent to your email address.',
     });
   } catch (error: any) {
     console.error('Error in send-otp API:', error);

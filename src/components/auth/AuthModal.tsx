@@ -348,24 +348,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultMo
                   <div className="text-[11px] text-slate-300 leading-normal">
                     A 4-digit verification code has been sent to <strong className="text-white">{email}</strong> from <strong className="text-amber-300">wonderlightadventure@gmail.com</strong>.
                   </div>
-                  {generatedOtpHint && (
-                    <div className="pt-1 flex items-center justify-center">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (generatedOtpHint && generatedOtpHint.length === 4) {
-                            setDigit1(generatedOtpHint[0]);
-                            setDigit2(generatedOtpHint[1]);
-                            setDigit3(generatedOtpHint[2]);
-                            setDigit4(generatedOtpHint[3]);
-                          }
-                        }}
-                        className="text-[11px] text-amber-300 font-bold hover:text-amber-200 flex items-center gap-1.5 bg-amber-500/20 px-3 py-1.5 rounded-xl border border-amber-500/40 shadow-glow-gold cursor-pointer animate-pulse"
-                      >
-                        <span>⚡ Instant Code: <strong>{generatedOtpHint}</strong> (Click to Auto-fill)</span>
-                      </button>
-                    </div>
-                  )}
                 </div>
 
                 <div className="space-y-2 text-center">
