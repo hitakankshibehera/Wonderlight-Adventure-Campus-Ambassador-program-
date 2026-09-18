@@ -41,13 +41,13 @@ export default function EventProposalPage() {
     setLoading(true);
 
     try {
-      // Record audit log and store draft event proposal for admin review
-      dbService.addAuditLog({
-        userId: user?.id || 'ambassador',
-        userEmail: user?.email || 'ambassador@wonderlight.adventure',
-        action: 'PROPOSE_CAMPUS_EVENT',
-        details: `Submitted proposal for campus event "${form.eventName}" at ${form.college} (Status: UNDER_REVIEW)`,
-      });
+      dbService.addAuditLog(
+        'PROPOSE_CAMPUS_EVENT',
+        'EventProposal',
+        form.eventName,
+        'UNDER_REVIEW',
+        form.college
+      );
 
       setSubmitted(true);
     } catch (err) {
