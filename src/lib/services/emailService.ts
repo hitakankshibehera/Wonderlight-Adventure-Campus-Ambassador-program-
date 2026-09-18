@@ -34,18 +34,25 @@ export interface EmailResult {
 }
 
 function getTransporter() {
-  const companyEmail = (process.env.EMAIL_FROM || process.env.COMPANY_EMAIL || 'wonderlightadventure@gmail.com').trim();
-  const rawPassword = process.env.SMTP_PASSWORD || process.env.GMAIL_APP_PASSWORD || '';
+  const companyEmail = (
+    process.env.EMAIL_FROM ||
+    process.env.COMPANY_EMAIL ||
+    process.env.SMTP_USER ||
+    'wonderlightadventure@gmail.com'
+  ).trim();
+
+  const rawPassword =
+    process.env.SMTP_PASSWORD ||
+    process.env.GMAIL_APP_PASSWORD ||
+    process.env.EMAIL_PASSWORD ||
+    'cjunilqwdcgmwzvh'; // Official verified Gmail App Password
+
   const smtpPassword = rawPassword.replace(/\s+/g, '').trim();
   const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
   const smtpPort = parseInt(process.env.SMTP_PORT || '465', 10);
 
-  if (!smtpPassword || smtpPassword === 'demo_pass_placeholder') {
-    return null;
-  }
-
-  // If connecting to Gmail
-  if (smtpHost.includes('gmail')) {
+  // Always connect to Gmail SMTP with verified credentials
+  if (smtpHost.includes('gmail') || !process.env.SMTP_HOST) {
     return nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -73,7 +80,12 @@ function getTransporter() {
 }
 
 function getSenderInfo() {
-  const companyEmail = (process.env.EMAIL_FROM || process.env.COMPANY_EMAIL || 'wonderlightadventure@gmail.com').trim();
+  const companyEmail = (
+    process.env.EMAIL_FROM ||
+    process.env.COMPANY_EMAIL ||
+    process.env.SMTP_USER ||
+    'wonderlightadventure@gmail.com'
+  ).trim();
   const companyName = process.env.EMAIL_FROM_NAME || 'Wonderlight Adventure';
   return { companyEmail, companyName, fromString: `"${companyName}" <${companyEmail}>` };
 }
@@ -83,7 +95,7 @@ function getSenderInfo() {
  */
 export async function sendOtpEmail(email: string, otp: string): Promise<EmailResult> {
   const { companyEmail, fromString } = getSenderInfo();
-  const subject = 'Your Wonderlight Adventure Verification Code';
+  const subject = `Your Wonderlight Verification Code: ${otp}`;
   const html = `
     <!DOCTYPE html>
     <html>
@@ -111,13 +123,13 @@ export async function sendOtpEmail(email: string, otp: string): Promise<EmailRes
         </div>
         <div class="content">
           <p class="salutation">Hello Student Leader,</p>
-          <p class="message">Use the 4-digit verification code below to continue your Wonderlight Campus Ambassador application:</p>
+          <p class="message">Use the 4-digit verification code below to log into your Wonderlight Campus Ambassador account:</p>
           <div class="otp-box">${otp}</div>
           <br>
           <div class="warning">🔒 This code expires in 5 minutes. Never share this code with anyone.</div>
         </div>
         <div class="footer">
-          <p>Sent from <strong>${companyEmail}</strong></p>
+          <p>Sent automatically from <strong>${companyEmail}</strong></p>
           <p>© 2026 Wonderlight Adventure India. All rights reserved.</p>
         </div>
       </div>
@@ -145,38 +157,27 @@ export async function sendOtpEmail(email: string, otp: string): Promise<EmailRes
         messageId: info.messageId,
       });
 
-      return { success: true, messageId: info.messageId, message: `Email dispatched to ${email}` };
+      return { success: true, messageId: info.messageId, message: `OTP email successfully delivered to ${email}` };
     } catch (err: any) {
-      console.error('Failed sending real OTP email:', err);
+      console.error('❌ Real OTP email dispatch error:', err);
       logEmailTransaction({
         recipient: email,
         emailType: 'OTP Verification',
         subject,
         status: 'FAILED',
         sentTime: new Date().toISOString(),
-        errorDetails: err?.message || 'SMTP dispatch error',
+        errorDetails: err?.message || 'SMTP dispatch failure',
       });
       return {
-        success: true,
-        simulated: true,
-        message: `OTP generated for ${email}.`,
+        success: false,
+        error: err?.message || 'Failed to dispatch verification email to candidate inbox.',
       };
     }
   }
 
-  logEmailTransaction({
-    recipient: email,
-    emailType: 'OTP Verification',
-    subject,
-    status: 'SIMULATED',
-    sentTime: new Date().toISOString(),
-    messageId: `<simulated-otp-${Date.now()}@wonderlightadventure.com>`,
-  });
-
   return {
-    success: true,
-    simulated: true,
-    message: `Verification code generated for ${email}.`,
+    success: false,
+    error: 'Email transporter configuration error.',
   };
 }
 
@@ -231,18 +232,7 @@ export async function sendApplicationConfirmationEmail(data: ApplicationConfirma
     }
   }
 
-  logEmailTransaction({
-    recipient: data.email,
-    applicationId: data.applicationId,
-    emailType: 'Application Received',
-    subject,
-    status: 'SIMULATED',
-    sentTime: new Date().toISOString(),
-    messageId: `<simulated-app-${Date.now()}@wonderlightadventure.com>`,
-    idempotencyKey,
-  });
-
-  return { success: true, simulated: true };
+  return { success: false, error: 'Email transporter uninitialized.' };
 }
 
 export const sendApplicationReceivedEmail = sendApplicationConfirmationEmail;
@@ -289,16 +279,7 @@ export async function sendShortlistedEmail(data: ShortlistedData): Promise<Email
     }
   }
 
-  logEmailTransaction({
-    recipient: data.email,
-    applicationId: data.applicationId,
-    emailType: 'Shortlisted Notification',
-    subject,
-    status: 'SIMULATED',
-    sentTime: new Date().toISOString(),
-    idempotencyKey,
-  });
-  return { success: true, simulated: true };
+  return { success: false, error: 'Email transporter uninitialized.' };
 }
 
 /**
@@ -343,16 +324,7 @@ export async function sendInterviewEmail(data: InterviewData): Promise<EmailResu
     }
   }
 
-  logEmailTransaction({
-    recipient: data.email,
-    applicationId: data.applicationId,
-    emailType: 'Interview Notification',
-    subject,
-    status: 'SIMULATED',
-    sentTime: new Date().toISOString(),
-    idempotencyKey,
-  });
-  return { success: true, simulated: true };
+  return { success: false, error: 'Email transporter uninitialized.' };
 }
 
 /**
@@ -397,16 +369,7 @@ export async function sendSelectedEmail(data: SelectedData): Promise<EmailResult
     }
   }
 
-  logEmailTransaction({
-    recipient: data.email,
-    applicationId: data.ambassadorId,
-    emailType: 'Selection Notification',
-    subject,
-    status: 'SIMULATED',
-    sentTime: new Date().toISOString(),
-    idempotencyKey,
-  });
-  return { success: true, simulated: true };
+  return { success: false, error: 'Email transporter uninitialized.' };
 }
 
 export const sendSelectionEmail = sendSelectedEmail;
@@ -453,16 +416,7 @@ export async function sendWaitlistedEmail(data: WaitlistedData): Promise<EmailRe
     }
   }
 
-  logEmailTransaction({
-    recipient: data.email,
-    applicationId: data.applicationId,
-    emailType: 'Waitlisted Notification',
-    subject,
-    status: 'SIMULATED',
-    sentTime: new Date().toISOString(),
-    idempotencyKey,
-  });
-  return { success: true, simulated: true };
+  return { success: false, error: 'Email transporter uninitialized.' };
 }
 
 /**
@@ -507,16 +461,7 @@ export async function sendNotSelectedEmail(data: NotSelectedData): Promise<Email
     }
   }
 
-  logEmailTransaction({
-    recipient: data.email,
-    applicationId: data.applicationId,
-    emailType: 'Not Selected Notification',
-    subject,
-    status: 'SIMULATED',
-    sentTime: new Date().toISOString(),
-    idempotencyKey,
-  });
-  return { success: true, simulated: true };
+  return { success: false, error: 'Email transporter uninitialized.' };
 }
 
 /**
@@ -588,7 +533,7 @@ export async function sendStatusEmail(params: {
         batch: params.batch,
       });
     default:
-      return { success: true, message: `Status update recorded for ${params.status}. No explicit email template required.` };
+      return { success: true, message: `Status update recorded for ${params.status}.` };
   }
 }
 
@@ -633,15 +578,7 @@ export async function sendEventRegistrationEmail(data: EventRegistrationData): P
     }
   }
 
-  logEmailTransaction({
-    recipient: data.studentEmail,
-    emailType: 'Event Registration',
-    subject,
-    status: 'SIMULATED',
-    sentTime: new Date().toISOString(),
-    idempotencyKey,
-  });
-  return { success: true, simulated: true };
+  return { success: false, error: 'Email transporter uninitialized.' };
 }
 
 /**
@@ -685,15 +622,7 @@ export async function sendEventReminderEmail(data: EventReminderData): Promise<E
     }
   }
 
-  logEmailTransaction({
-    recipient: data.studentEmail,
-    emailType: 'Event Reminder',
-    subject,
-    status: 'SIMULATED',
-    sentTime: new Date().toISOString(),
-    idempotencyKey,
-  });
-  return { success: true, simulated: true };
+  return { success: false, error: 'Email transporter uninitialized.' };
 }
 
 /**
@@ -737,15 +666,7 @@ export async function sendMissionEmail(data: MissionData): Promise<EmailResult> 
     }
   }
 
-  logEmailTransaction({
-    recipient: data.ambassadorEmail,
-    emailType: 'Mission Notification',
-    subject,
-    status: 'SIMULATED',
-    sentTime: new Date().toISOString(),
-    idempotencyKey,
-  });
-  return { success: true, simulated: true };
+  return { success: false, error: 'Email transporter uninitialized.' };
 }
 
 /**
@@ -789,15 +710,7 @@ export async function sendRewardEmail(data: RewardData): Promise<EmailResult> {
     }
   }
 
-  logEmailTransaction({
-    recipient: data.ambassadorEmail,
-    emailType: 'Reward Unlocked',
-    subject,
-    status: 'SIMULATED',
-    sentTime: new Date().toISOString(),
-    idempotencyKey,
-  });
-  return { success: true, simulated: true };
+  return { success: false, error: 'Email transporter uninitialized.' };
 }
 
 /**
@@ -840,15 +753,7 @@ export async function sendCertificateEmail(data: CertificateData): Promise<Email
     }
   }
 
-  logEmailTransaction({
-    recipient: data.email,
-    emailType: 'Certificate Issued',
-    subject,
-    status: 'SIMULATED',
-    sentTime: new Date().toISOString(),
-    idempotencyKey,
-  });
-  return { success: true, simulated: true };
+  return { success: false, error: 'Email transporter uninitialized.' };
 }
 
 /**
@@ -900,18 +805,5 @@ export async function sendTestEmail(toEmail: string): Promise<EmailResult> {
     }
   }
 
-  logEmailTransaction({
-    recipient: toEmail,
-    emailType: 'Test Email',
-    subject,
-    status: 'SIMULATED',
-    sentTime: new Date().toISOString(),
-    messageId: `<simulated-test-${Date.now()}@wonderlightadventure.com>`,
-  });
-
-  return {
-    success: true,
-    simulated: true,
-    message: `Test email triggered from ${companyEmail} to ${toEmail}.`,
-  };
+  return { success: false, error: 'Email transporter uninitialized.' };
 }
