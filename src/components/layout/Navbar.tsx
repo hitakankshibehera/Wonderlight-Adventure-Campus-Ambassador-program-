@@ -14,7 +14,9 @@ export const Navbar: React.FC = () => {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
 
-  const preLoginNavLinks = [
+  type NavItem = { label: string; href: string; badge?: string };
+
+  const preLoginNavLinks: NavItem[] = [
     { label: 'PROGRAM', href: '/campus-ambassador' },
     { label: 'HOW IT WORKS', href: '/campus-ambassador#how-it-works' },
     { label: 'EVENTS', href: '/campus-ambassador/events' },
@@ -24,7 +26,7 @@ export const Navbar: React.FC = () => {
     { label: 'FAQ', href: '/campus-ambassador/faq' },
   ];
 
-  const postLoginNavLinks = [
+  const postLoginNavLinks: NavItem[] = [
     { label: 'PROGRAM', href: '/campus-ambassador' },
     { label: 'EVENTS', href: '/campus-ambassador/events' },
     { label: 'MISSIONS', href: '/ambassador/missions' },
