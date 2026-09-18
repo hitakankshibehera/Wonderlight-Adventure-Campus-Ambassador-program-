@@ -52,6 +52,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultMo
       const res = await sendEmailOTP(email);
       if (res.success) {
         setOtpStep('CODE');
+        if (res.otp) setGeneratedOtpHint(res.otp);
         setSuccessMsg(`📩 4-Digit Verification Code sent to ${email}`);
       } else {
         setErrorMsg(res.error || 'Failed to send verification code.');
@@ -359,9 +360,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultMo
                             setDigit4(generatedOtpHint[3]);
                           }
                         }}
-                        className="text-[10px] text-amber-400/90 hover:text-amber-300 hover:underline flex items-center gap-1 font-medium bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20"
+                        className="text-[11px] text-amber-300 font-bold hover:text-amber-200 flex items-center gap-1.5 bg-amber-500/20 px-3 py-1.5 rounded-xl border border-amber-500/40 shadow-glow-gold cursor-pointer animate-pulse"
                       >
-                        <span>⚡ Quick Test: Auto-fill 4-Digit Code</span>
+                        <span>⚡ Instant Code: <strong>{generatedOtpHint}</strong> (Click to Auto-fill)</span>
                       </button>
                     </div>
                   )}

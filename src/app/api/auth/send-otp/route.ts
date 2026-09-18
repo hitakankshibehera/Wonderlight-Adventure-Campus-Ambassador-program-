@@ -51,13 +51,13 @@ export async function POST(request: Request) {
       );
     }
 
-    // If running in SIMULATED mode (no Gmail App Password configured in .env.local),
-    // include devOtp so developer/tester can verify immediately.
+    // Always include devOtp so user can verify immediately with 1-click auto-fill
     return NextResponse.json({
       success: true,
       message: 'Verification code sent',
       simulated: Boolean(emailResult.simulated),
-      devOtp: emailResult.simulated ? otp : undefined,
+      devOtp: otp,
+      otp: otp,
     });
   } catch (error: any) {
     console.error('Error in send-otp API:', error);
