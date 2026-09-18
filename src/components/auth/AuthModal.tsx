@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/lib/services/authContext';
+import { dbService } from '@/lib/services/db';
 import { Role } from '@/types';
 import { X, Mail, Lock, User as UserIcon, Sparkles, ArrowRight, CheckCircle2, AlertCircle, Loader2, KeyRound, RefreshCw, Send } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -88,13 +89,29 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultMo
     try {
       const res = await verifyEmailOTP(email, code);
       if (res.success) {
-        setSuccessMsg('✓ Code verified! Logging in automatically...');
+        setSuccessMsg('✓ Code verified! Redirecting to your portal...');
+
+        const cleanEmail = email.trim().toLowerCase();
+        const amb = dbService.getAmbassadors().find((a) => a.email.toLowerCase() === cleanEmail);
+        const app = dbService.getApplicants().find((a) => a.email.toLowerCase() === cleanEmail);
+
+        let destination = '/ambassador/dashboard';
+        if (cleanEmail.includes('admin') || cleanEmail.includes('wonderlight')) {
+          destination = '/admin/dashboard';
+        } else if (amb) {
+          destination = '/ambassador/dashboard';
+        } else if (app) {
+          destination = `/campus-ambassador/application-status?id=${app.applicationId}`;
+        } else {
+          destination = '/campus-ambassador/apply';
+        }
+
         setTimeout(() => {
           onClose();
-          router.push('/ambassador/dashboard');
-        }, 500);
+          window.location.href = destination;
+        }, 200);
       } else {
-        setErrorMsg(res.error || 'Invalid 4-digit code.');
+        setErrorMsg(res.error || 'Invalid 4-digit code. Please check your email.');
         setDigit1('');
         setDigit2('');
         setDigit3('');
