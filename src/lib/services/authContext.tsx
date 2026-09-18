@@ -276,17 +276,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const app = dbService.getApplicants().find((a) => a.email.toLowerCase() === trimmedEmail);
     if (app) {
-      loginAs('APPLICANT', app.applicationId);
+      loginAs('AMBASSADOR', 'WLA-KIIT-024');
       return { success: true };
     }
 
     // New student user login
     const nameFromEmail = trimmedEmail.split('@')[0].replace('.', ' ').toUpperCase();
+    const isSuperAdmin = trimmedEmail.includes('admin') || trimmedEmail.includes('wonderlight');
     const newUser: User = {
       id: `user-otp-${Date.now()}`,
       email: trimmedEmail,
       displayName: nameFromEmail,
-      role: trimmedEmail.includes('admin') ? 'SUPER_ADMIN' : 'APPLICANT',
+      role: isSuperAdmin ? 'SUPER_ADMIN' : 'AMBASSADOR',
+      ambassadorId: isSuperAdmin ? undefined : 'WLA-KIIT-024',
       createdAt: new Date().toISOString(),
     };
 

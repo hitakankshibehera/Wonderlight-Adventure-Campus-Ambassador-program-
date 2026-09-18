@@ -224,45 +224,63 @@ export const Navbar: React.FC = () => {
               </Link>
             ))}
             <div className="pt-3 border-t border-slate-800 space-y-2">
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  setAuthModalOpen(true);
-                }}
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs font-bold text-emerald-400"
-              >
-                <LogIn className="w-4 h-4" />
-                <span>Firebase Login / Sign Up</span>
-              </button>
-
-              <Link
-                href="/ambassador/dashboard"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl glass-input text-xs font-semibold text-slate-200"
-              >
-                <User className="w-4 h-4 text-emerald-400" />
-                <span>Ambassador Portal</span>
-              </Link>
+              {user ? (
+                <>
+                  <div className="px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs">
+                    <div className="font-bold text-white truncate">{fullName}</div>
+                    <div className="text-[10px] text-emerald-400 font-semibold">Logged In • Ambassador Portal</div>
+                  </div>
+                  <Link
+                    href="/ambassador/dashboard"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-emerald-500 text-slate-950 text-xs font-bold shadow-glow-emerald"
+                  >
+                    <User className="w-4 h-4 text-slate-950" />
+                    <span>Ambassador Portal</span>
+                  </Link>
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      logout();
+                    }}
+                    className="w-full py-2 rounded-xl text-xs font-bold text-rose-400 bg-rose-500/10 border border-rose-500/20"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      setAuthModalOpen(true);
+                    }}
+                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs font-bold text-emerald-400"
+                  >
+                    <LogIn className="w-4 h-4" />
+                    <span>4-Digit Code Login</span>
+                  </button>
+                  <Link
+                    href="/campus-ambassador/apply"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-emerald-500 text-slate-950 text-xs font-bold shadow-glow-emerald"
+                  >
+                    <span>APPLY NOW FOR 2026-27</span>
+                    <ArrowUpRight className="w-4 h-4" />
+                  </Link>
+                </>
+              )}
 
               {hasRole(['SUPER_ADMIN', 'PROGRAM_MANAGER', 'EVENT_MANAGER', 'MARKETING_MANAGER', 'FINANCE_MANAGER', 'MODERATOR']) && (
                 <Link
                   href="/admin/dashboard"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl glass-input text-xs font-semibold text-slate-200"
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl glass-input text-xs font-semibold text-amber-400"
                 >
                   <ShieldCheck className="w-4 h-4 text-amber-400" />
-                  <span>Admin Portal</span>
+                  <span>Admin Console</span>
                 </Link>
               )}
-
-              <Link
-                href="/campus-ambassador/apply"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-emerald-500 text-slate-950 text-xs font-bold shadow-glow-emerald"
-              >
-                <span>APPLY NOW FOR 2026-27</span>
-                <ArrowUpRight className="w-4 h-4" />
-              </Link>
             </div>
           </div>
         )}

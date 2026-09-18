@@ -1,4 +1,7 @@
 import crypto from 'crypto';
+import fs from 'fs';
+import path from 'path';
+import os from 'os';
 
 interface OtpRecord {
   email: string;
@@ -18,11 +21,49 @@ declare global {
   var _wla_verified_emails: Set<string> | undefined;
 }
 
+function getStoreFilePath(): string {
+  try {
+    return path.join(process.cwd(), '.wla_otp_store.json');
+  } catch (e) {
+    return path.join(os.tmpdir(), '.wla_otp_store.json');
+  }
+}
+
+function loadPersistedData(): { records: [string, OtpRecord][]; verified: string[] } {
+  try {
+    const filePath = getStoreFilePath();
+    if (fs.existsSync(filePath)) {
+      const content = fs.readFileSync(filePath, 'utf-8');
+      return JSON.parse(content);
+    }
+  } catch (e) {
+    // Ignore load errors
+  }
+  return { records: [], verified: [] };
+}
+
+function savePersistedData(map: Map<string, OtpRecord>, verified: Set<string>) {
+  try {
+    const filePath = getStoreFilePath();
+    const data = {
+      records: Array.from(map.entries()),
+      verified: Array.from(verified),
+    };
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
+  } catch (e) {
+    // Ignore save errors
+  }
+}
+
+const initialPersisted = loadPersistedData();
+
 const otpMap: Map<string, OtpRecord> =
-  globalThis._wla_otp_map || (globalThis._wla_otp_map = new Map<string, OtpRecord>());
+  globalThis._wla_otp_map ||
+  (globalThis._wla_otp_map = new Map<string, OtpRecord>(initialPersisted.records));
 
 const verifiedEmails: Set<string> =
-  globalThis._wla_verified_emails || (globalThis._wla_verified_emails = new Set<string>());
+  globalThis._wla_verified_emails ||
+  (globalThis._wla_verified_emails = new Set<string>(initialPersisted.verified));
 
 export function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
@@ -80,7 +121,7 @@ export function createAndStoreOtp(emailInput: string, otp: string): StoreOtpResu
   hourlyRequests.push(now);
   const otpHash = hashOtp(otp.trim());
 
-  otpMap.set(email, {
+  const newRecord: OtpRecord = {
     email,
     otpHash,
     expiresAt: now + FIVE_MINUTES,
@@ -89,7 +130,10 @@ export function createAndStoreOtp(emailInput: string, otp: string): StoreOtpResu
     resendCooldownUntil: now + THIRTY_SECONDS,
     hourlyRequests,
     verified: false,
-  });
+  };
+
+  otpMap.set(email, newRecord);
+  savePersistedData(otpMap, verifiedEmails);
 
   return {
     success: true,
@@ -109,6 +153,17 @@ export function verifyOtpCode(emailInput: string, otpInput: string): VerifyOtpRe
   const otp = (otpInput || '').toString().trim().replace(/\D/g, '');
   const now = Date.now();
 
+  // Sync from persistent file store if missing in current process memory
+  if (!otpMap.has(email) || !verifiedEmails.has(email)) {
+    const diskData = loadPersistedData();
+    for (const [k, v] of diskData.records) {
+      if (!otpMap.has(k)) otpMap.set(k, v);
+    }
+    for (const v of diskData.verified) {
+      verifiedEmails.add(v);
+    }
+  }
+
   // If already verified in this session, return success immediately
   if (verifiedEmails.has(email)) {
     return {
@@ -118,11 +173,12 @@ export function verifyOtpCode(emailInput: string, otpInput: string): VerifyOtpRe
     };
   }
 
-  const record = otpMap.get(email);
+  let record = otpMap.get(email);
 
   // If record exists and was already verified
   if (record && record.verified) {
     verifiedEmails.add(email);
+    savePersistedData(otpMap, verifiedEmails);
     return {
       success: true,
       verified: true,
@@ -150,6 +206,7 @@ export function verifyOtpCode(emailInput: string, otpInput: string): VerifyOtpRe
   // Expiration Check (5 minutes)
   if (now > record.expiresAt) {
     otpMap.delete(email);
+    savePersistedData(otpMap, verifiedEmails);
     return {
       success: false,
       verified: false,
@@ -160,6 +217,7 @@ export function verifyOtpCode(emailInput: string, otpInput: string): VerifyOtpRe
   // Attempt Limit Check (max 5)
   if (record.attempts >= 5) {
     otpMap.delete(email);
+    savePersistedData(otpMap, verifiedEmails);
     return {
       success: false,
       verified: false,
@@ -172,6 +230,7 @@ export function verifyOtpCode(emailInput: string, otpInput: string): VerifyOtpRe
     record.verified = true;
     record.verifiedAt = now;
     verifiedEmails.add(email);
+    savePersistedData(otpMap, verifiedEmails);
 
     return {
       success: true,
@@ -182,6 +241,7 @@ export function verifyOtpCode(emailInput: string, otpInput: string): VerifyOtpRe
 
   // Increment failed attempts only for valid 4-digit incorrect code
   record.attempts += 1;
+  savePersistedData(otpMap, verifiedEmails);
   const remainingAttempts = Math.max(0, 5 - record.attempts);
 
   if (record.attempts >= 5) {
