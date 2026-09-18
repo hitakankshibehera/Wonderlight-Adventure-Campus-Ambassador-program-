@@ -183,13 +183,15 @@ export const Navbar: React.FC = () => {
               </>
             )}
 
-            <Link
-              href="/admin/dashboard"
-              className="p-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-700/60 transition-colors"
-              title="Admin Console"
-            >
-              <ShieldCheck className="w-4 h-4 text-amber-400" />
-            </Link>
+            {hasRole(['SUPER_ADMIN', 'PROGRAM_MANAGER', 'EVENT_MANAGER', 'MARKETING_MANAGER', 'FINANCE_MANAGER', 'MODERATOR']) && (
+              <Link
+                href="/admin/dashboard"
+                className="p-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-700/60 transition-colors"
+                title="Admin Console"
+              >
+                <ShieldCheck className="w-4 h-4 text-amber-400" />
+              </Link>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -242,14 +244,16 @@ export const Navbar: React.FC = () => {
                 <span>Ambassador Portal</span>
               </Link>
 
-              <Link
-                href="/admin/dashboard"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl glass-input text-xs font-semibold text-slate-200"
-              >
-                <ShieldCheck className="w-4 h-4 text-amber-400" />
-                <span>Admin Portal</span>
-              </Link>
+              {hasRole(['SUPER_ADMIN', 'PROGRAM_MANAGER', 'EVENT_MANAGER', 'MARKETING_MANAGER', 'FINANCE_MANAGER', 'MODERATOR']) && (
+                <Link
+                  href="/admin/dashboard"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl glass-input text-xs font-semibold text-slate-200"
+                >
+                  <ShieldCheck className="w-4 h-4 text-amber-400" />
+                  <span>Admin Portal</span>
+                </Link>
+              )}
 
               <Link
                 href="/campus-ambassador/apply"

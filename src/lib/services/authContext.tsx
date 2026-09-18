@@ -37,8 +37,8 @@ interface AuthContextType {
 const DEFAULT_USERS: Record<Role, User> = {
   SUPER_ADMIN: {
     id: 'user-super-admin',
-    email: 'admin@wonderlight.adventure',
-    displayName: 'Vikram Sengupta (Super Admin)',
+    email: 'wonderlightadventure@gmail.com',
+    displayName: 'Wonderlight Super Admin',
     role: 'SUPER_ADMIN',
     photoURL: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&auto=format&fit=crop&q=80',
     createdAt: '2026-08-01T00:00:00Z',
@@ -151,9 +151,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         } catch (e) {
           console.warn(e);
         }
-        const defaultSuper = DEFAULT_USERS.SUPER_ADMIN;
-        setCurrentUser(defaultSuper);
-        updateProfiles(defaultSuper);
+        setCurrentUser(null);
+        setAmbassadorProfile(null);
+        setApplicantProfile(null);
       }
       setIsFirebaseLoading(false);
     });
@@ -334,6 +334,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     email: string,
     pass: string
   ): Promise<{ success: boolean; error?: string }> => {
+    const cleanEmail = email.trim().toLowerCase();
+    
+    // Explicit Super Admin Login Check
+    if (cleanEmail === 'wonderlightadventure@gmail.com' && pass === 'Wonderlight@123') {
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+      } catch (e) {
+        console.warn('Local authentication active for Super Admin');
+      }
+      const superUser: User = {
+        id: 'user-super-admin',
+        email: 'wonderlightadventure@gmail.com',
+        displayName: 'Wonderlight Super Admin',
+        role: 'SUPER_ADMIN',
+        createdAt: new Date().toISOString(),
+      };
+      setCurrentUser(superUser);
+      updateProfiles(superUser);
+      localStorage.setItem('wla_auth_user', JSON.stringify(superUser));
+      return { success: true };
+    }
+
     try {
       const res = await signInWithEmailAndPassword(auth, email, pass);
       if (res.user) {
@@ -342,7 +364,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         let role: Role = 'APPLICANT';
         if (amb) role = 'AMBASSADOR';
-        else if (email.includes('admin') || email.includes('wonderlight')) role = 'SUPER_ADMIN';
+        else if (cleanEmail.includes('admin') || cleanEmail.includes('wonderlight')) role = 'SUPER_ADMIN';
 
         const userObj: User = {
           id: res.user.uid,
@@ -367,17 +389,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const loginWithEmail = async (email: string, pass: string): Promise<boolean> => {
+    const cleanEmail = email.trim().toLowerCase();
+    if (cleanEmail === 'wonderlightadventure@gmail.com' && pass === 'Wonderlight@123') {
+      loginAs('SUPER_ADMIN');
+      return true;
+    }
+
     const res = await signInWithFirebase(email, pass);
     if (res.success) return true;
 
-    const trimmed = email.trim().toLowerCase();
-    const amb = dbService.getAmbassadors().find((a) => a.email.toLowerCase() === trimmed);
+    const amb = dbService.getAmbassadors().find((a) => a.email.toLowerCase() === cleanEmail);
     if (amb) {
       loginAs('AMBASSADOR', amb.ambassadorId);
       return true;
     }
 
-    const app = dbService.getApplicants().find((a) => a.email.toLowerCase() === trimmed);
+    const app = dbService.getApplicants().find((a) => a.email.toLowerCase() === cleanEmail);
     if (app) {
       loginAs('APPLICANT', app.applicationId);
       return true;

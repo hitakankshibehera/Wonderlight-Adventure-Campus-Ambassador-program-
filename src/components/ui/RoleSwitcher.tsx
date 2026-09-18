@@ -22,6 +22,15 @@ export const RoleSwitcher: React.FC = () => {
     { role: 'APPLICANT', label: 'Applicant (Meera - COEP)', desc: 'Application tracking & status view', color: 'text-slate-300 bg-slate-800/60 border-slate-600/40' },
   ];
 
+  const isAdmin = !!user && ['SUPER_ADMIN', 'PROGRAM_MANAGER', 'EVENT_MANAGER', 'MARKETING_MANAGER', 'FINANCE_MANAGER', 'MODERATOR'].includes(user.role);
+
+  const availableRoles = roles.filter((item) => {
+    if (['SUPER_ADMIN', 'PROGRAM_MANAGER', 'EVENT_MANAGER', 'MARKETING_MANAGER', 'FINANCE_MANAGER', 'MODERATOR'].includes(item.role)) {
+      return isAdmin;
+    }
+    return true;
+  });
+
   const handleResetData = () => {
     if (window.confirm('Reset all demo data (applicants, ambassadors, events, missions, rewards) to default seed?')) {
       setResetting(true);
@@ -68,7 +77,7 @@ export const RoleSwitcher: React.FC = () => {
           </div>
 
           <div className="space-y-1.5 max-h-60 overflow-y-auto pr-1">
-            {roles.map((item) => {
+            {availableRoles.map((item) => {
               const active = role === item.role;
               return (
                 <button

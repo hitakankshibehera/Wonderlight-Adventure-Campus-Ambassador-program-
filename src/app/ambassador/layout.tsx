@@ -26,7 +26,7 @@ import { LEVEL_CONFIGS } from '@/lib/services/seedData';
 export default function AmbassadorLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, ambassadorProfile, logout, loginAs } = useAuth();
+  const { user, ambassadorProfile, logout, loginAs, hasRole } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
@@ -122,16 +122,18 @@ export default function AmbassadorLayout({ children }: { children: React.ReactNo
             <ExternalLink className="w-3.5 h-3.5" />
           </Link>
 
-          <Link
-            href="/admin/dashboard"
-            className="w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-xs text-amber-400 hover:bg-amber-950/30 transition-colors"
-          >
-            <span className="flex items-center gap-2">
-              <Shield className="w-3.5 h-3.5" />
-              <span>Admin Portal</span>
-            </span>
-            <ChevronRight className="w-3.5 h-3.5" />
-          </Link>
+          {hasRole(['SUPER_ADMIN', 'PROGRAM_MANAGER', 'EVENT_MANAGER', 'MARKETING_MANAGER', 'FINANCE_MANAGER', 'MODERATOR']) && (
+            <Link
+              href="/admin/dashboard"
+              className="w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-xs text-amber-400 hover:bg-amber-950/30 transition-colors"
+            >
+              <span className="flex items-center gap-2">
+                <Shield className="w-3.5 h-3.5" />
+                <span>Admin Portal</span>
+              </span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </Link>
+          )}
         </div>
       </aside>
 
@@ -213,17 +215,19 @@ export default function AmbassadorLayout({ children }: { children: React.ReactNo
                 <span>Public Website</span>
                 <ExternalLink className="w-3.5 h-3.5" />
               </Link>
-              <Link
-                href="/admin/dashboard"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-xs text-amber-400"
-              >
-                <span className="flex items-center gap-2">
-                  <Shield className="w-3.5 h-3.5" />
-                  <span>Admin Portal</span>
-                </span>
-                <ChevronRight className="w-3.5 h-3.5" />
-              </Link>
+              {hasRole(['SUPER_ADMIN', 'PROGRAM_MANAGER', 'EVENT_MANAGER', 'MARKETING_MANAGER', 'FINANCE_MANAGER', 'MODERATOR']) && (
+                <Link
+                  href="/admin/dashboard"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-xs text-amber-400"
+                >
+                  <span className="flex items-center gap-2">
+                    <Shield className="w-3.5 h-3.5" />
+                    <span>Admin Portal</span>
+                  </span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </Link>
+              )}
             </div>
           </div>
         )}

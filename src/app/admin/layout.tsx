@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
@@ -40,6 +40,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const { user, role, logout } = useAuth();
   const [searchFilter, setSearchFilter] = useState('');
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
+  const isAdmin = !!user && ['SUPER_ADMIN', 'PROGRAM_MANAGER', 'EVENT_MANAGER', 'MARKETING_MANAGER', 'FINANCE_MANAGER', 'MODERATOR'].includes(role);
+
+  useEffect(() => {
+    if (!isAdmin) {
+      router.push('/superadmin');
+    }
+  }, [isAdmin, router]);
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-wonder-dark-950 text-slate-400 text-xs gap-3">
+        <div className="w-8 h-8 rounded-full border-2 border-amber-400 border-t-transparent animate-spin" />
+        <span>Restricted Area • Redirecting to Super Admin Portal...</span>
+      </div>
+    );
+  }
 
   const sidebarLinks = [
     { label: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
