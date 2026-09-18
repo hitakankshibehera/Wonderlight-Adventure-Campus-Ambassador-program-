@@ -24,12 +24,12 @@ function VerifyContent() {
     if (cert) {
       setResult({
         type: 'CERTIFICATE',
-        title: cert.title,
+        title: `${cert.certificateType.replace('_', ' ')} CERTIFICATE`,
         id: cert.certificateId,
         name: cert.recipientName,
         college: cert.college,
         issueDate: cert.issueDate,
-        program: 'Campus Ambassador Program 2026–27',
+        program: cert.programName || 'Campus Ambassador Program 2026–27',
       });
       return;
     }
