@@ -25,7 +25,6 @@ export const EmailOtpVerification: React.FC<EmailOtpVerificationProps> = ({
   const [digits, setDigits] = useState(['', '', '', '']);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [devNotice, setDevNotice] = useState<{ isSimulated: boolean; devOtp?: string } | null>(null);
 
   // Timers: 5-minute expiration & 30-second resend cooldown
   const [expireSeconds, setExpireSeconds] = useState(300); // 5 mins
@@ -136,10 +135,6 @@ export const EmailOtpVerification: React.FC<EmailOtpVerificationProps> = ({
       setResendCooldown(30);
       setCanResend(false);
       setIsExpired(false);
-      setDevNotice({
-        isSimulated: Boolean(data.simulated),
-        devOtp: data.devOtp,
-      });
     } catch (err: any) {
       setError('Network connection error. Please check your connection.');
     } finally {
@@ -224,6 +219,7 @@ export const EmailOtpVerification: React.FC<EmailOtpVerificationProps> = ({
       }
 
       setStep('VERIFIED');
+      onSuccess(email.trim().toLowerCase());
     } catch (err) {
       setError('Failed to reach server. Please try again.');
     } finally {
@@ -316,25 +312,6 @@ export const EmailOtpVerification: React.FC<EmailOtpVerificationProps> = ({
               {getMaskedEmail(email)}
             </div>
           </div>
-
-          {/* SIMULATION / REAL DISPATCH STATUS BANNER */}
-          {devNotice?.isSimulated && devNotice?.devOtp && (
-            <div className="mb-5 p-3.5 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-amber-200 text-xs space-y-1 text-center">
-              <div className="font-bold text-amber-400 flex items-center justify-center gap-1.5">
-                <Info className="w-4 h-4" />
-                <span>DEV SIMULATION MODE ACTIVE</span>
-              </div>
-              <p className="text-[11px] text-slate-300">
-                Google App Password not configured in <code className="text-amber-300 font-mono bg-slate-950 px-1 py-0.5 rounded">.env.local</code>.
-              </p>
-              <div className="pt-1">
-                <span className="text-[11px] text-slate-400 uppercase tracking-widest">Test 4-Digit Code: </span>
-                <strong className="text-base font-mono text-emerald-400 bg-slate-950 px-2.5 py-1 rounded-lg border border-emerald-500/40 ml-1">
-                  {devNotice.devOtp}
-                </strong>
-              </div>
-            </div>
-          )}
 
           {error && (
             <div className="mb-5 p-3.5 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-300 text-xs flex items-start gap-2.5">
