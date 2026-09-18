@@ -73,7 +73,7 @@ export async function POST(request: Request) {
     };
 
     // Attempt sending via Nodemailer if credentials exist
-    if (gmailAppPassword && gmailAppPassword !== 'demo_pass_placeholder') {
+    if (cleanPassword && cleanPassword !== 'demo_pass_placeholder') {
       await transporter.sendMail(mailOptions);
       return NextResponse.json({
         success: true,

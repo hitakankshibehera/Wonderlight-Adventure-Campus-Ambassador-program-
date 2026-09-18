@@ -40,10 +40,17 @@ function getTransporter() {
   });
 }
 
+export interface EmailResult {
+  success: boolean;
+  simulated?: boolean;
+  message?: string;
+  error?: string;
+}
+
 /**
  * 1. SEND OTP EMAIL
  */
-export async function sendOtpEmail(email: string, otp: string) {
+export async function sendOtpEmail(email: string, otp: string): Promise<EmailResult> {
   const companyEmail = process.env.EMAIL_FROM || process.env.COMPANY_EMAIL || 'wonderlightadventure@gmail.com';
   const companyName = process.env.EMAIL_FROM_NAME || 'Wonderlight Adventure';
   const subject = 'Your Wonderlight Adventure Verification Code';
@@ -153,7 +160,7 @@ export async function sendSelectionEmail(data: {
   college: string;
   ambassadorId?: string;
   batch?: string;
-}) {
+}): Promise<EmailResult> {
   const companyEmail = process.env.EMAIL_FROM || process.env.COMPANY_EMAIL || 'wonderlightadventure@gmail.com';
   const companyName = process.env.EMAIL_FROM_NAME || 'Wonderlight Adventure';
   const subject = '🎉 Congratulations! You Have Been Selected as a Wonderlight Campus Ambassador';
@@ -261,7 +268,7 @@ export async function sendApplicationReceivedEmail(data: {
   name: string;
   email: string;
   applicationId: string;
-}) {
+}): Promise<EmailResult> {
   const companyEmail = process.env.EMAIL_FROM || process.env.COMPANY_EMAIL || 'wonderlightadventure@gmail.com';
   const companyName = process.env.EMAIL_FROM_NAME || 'Wonderlight Adventure';
   const subject = 'Wonderlight Campus Ambassador — Application Received 🎉';
@@ -359,7 +366,7 @@ export async function sendApplicationReceivedEmail(data: {
 /**
  * 3. SEND TEST EMAIL (FOR ADMIN SETTINGS)
  */
-export async function sendTestEmail(toEmail: string) {
+export async function sendTestEmail(toEmail: string): Promise<EmailResult> {
   const companyEmail = process.env.EMAIL_FROM || process.env.COMPANY_EMAIL || 'wonderlightadventure@gmail.com';
   const companyName = process.env.EMAIL_FROM_NAME || 'Wonderlight Adventure';
   const subject = '⚡ Wonderlight Adventure Email Dispatcher Test';
