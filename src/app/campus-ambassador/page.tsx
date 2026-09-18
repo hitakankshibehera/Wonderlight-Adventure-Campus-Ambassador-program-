@@ -24,10 +24,18 @@ import {
   Clock,
   Ticket,
   Lock,
+  DollarSign,
+  FileCheck,
+  Mountain,
+  Backpack,
+  Rocket,
+  Zap,
+  Crown,
 } from 'lucide-react';
 import { dbService } from '@/lib/services/db';
 import { CMSConfig, EventItem, Mission, Ambassador } from '@/types';
 import { LEVEL_CONFIGS } from '@/lib/services/seedData';
+import { LevelBadgeIcon } from '@/components/ui/LevelBadgeIcon';
 
 export default function CampusAmbassadorLandingPage() {
   const [cms, setCms] = useState<CMSConfig>(dbService.getCMSConfig());
@@ -429,7 +437,7 @@ export default function CampusAmbassadorLandingPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="glass-card p-6 rounded-2xl space-y-3 border-emerald-500/20">
                 <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
-                  💰
+                  <DollarSign className="w-5 h-5" />
                 </div>
                 <h3 className="font-display font-bold text-white text-base">Performance Incentives</h3>
                 <p className="text-xs text-slate-400 leading-relaxed">
@@ -439,7 +447,7 @@ export default function CampusAmbassadorLandingPage() {
 
               <div className="glass-card p-6 rounded-2xl space-y-3 border-cyan-500/20">
                 <div className="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold">
-                  📜
+                  <FileCheck className="w-5 h-5" />
                 </div>
                 <h3 className="font-display font-bold text-white text-base">Verifiable Certificate</h3>
                 <p className="text-xs text-slate-400 leading-relaxed">
@@ -449,7 +457,7 @@ export default function CampusAmbassadorLandingPage() {
 
               <div className="glass-card p-6 rounded-2xl space-y-3 border-amber-500/20">
                 <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
-                  🌟
+                  <Award className="w-5 h-5" />
                 </div>
                 <h3 className="font-display font-bold text-white text-base">Executive LOR</h3>
                 <p className="text-xs text-slate-400 leading-relaxed">
@@ -459,7 +467,7 @@ export default function CampusAmbassadorLandingPage() {
 
               <div className="glass-card p-6 rounded-2xl space-y-3 border-purple-500/20">
                 <div className="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold">
-                  🏔️
+                  <Mountain className="w-5 h-5" />
                 </div>
                 <h3 className="font-display font-bold text-white text-base">Sponsored Expeditions</h3>
                 <p className="text-xs text-slate-400 leading-relaxed">
@@ -467,9 +475,9 @@ export default function CampusAmbassadorLandingPage() {
                 </p>
               </div>
 
-              <div className="glass-card p-6 rounded-2xl space-y-3 border-slate-700/40">
-                <div className="w-10 h-10 rounded-xl bg-slate-800 text-slate-300 flex items-center justify-center font-bold">
-                  🎒
+              <div className="glass-card p-6 rounded-2xl space-y-3 border-pink-500/20">
+                <div className="w-10 h-10 rounded-xl bg-pink-500/20 text-pink-400 flex items-center justify-center font-bold">
+                  <Backpack className="w-5 h-5" />
                 </div>
                 <h3 className="font-display font-bold text-white text-base">Exclusive Merch Kit</h3>
                 <p className="text-xs text-slate-400 leading-relaxed">
@@ -477,9 +485,9 @@ export default function CampusAmbassadorLandingPage() {
                 </p>
               </div>
 
-              <div className="glass-card p-6 rounded-2xl space-y-3 border-slate-700/40">
-                <div className="w-10 h-10 rounded-xl bg-slate-800 text-slate-300 flex items-center justify-center font-bold">
-                  🤝
+              <div className="glass-card p-6 rounded-2xl space-y-3 border-blue-500/20">
+                <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold">
+                  <Users className="w-5 h-5" />
                 </div>
                 <h3 className="font-display font-bold text-white text-base">National Networking</h3>
                 <p className="text-xs text-slate-400 leading-relaxed">
@@ -487,9 +495,9 @@ export default function CampusAmbassadorLandingPage() {
                 </p>
               </div>
 
-              <div className="glass-card p-6 rounded-2xl space-y-3 border-slate-700/40">
-                <div className="w-10 h-10 rounded-xl bg-slate-800 text-slate-300 flex items-center justify-center font-bold">
-                  📈
+              <div className="glass-card p-6 rounded-2xl space-y-3 border-teal-500/20">
+                <div className="w-10 h-10 rounded-xl bg-teal-500/20 text-teal-400 flex items-center justify-center font-bold">
+                  <TrendingUp className="w-5 h-5" />
                 </div>
                 <h3 className="font-display font-bold text-white text-base">Marketing Mastery</h3>
                 <p className="text-xs text-slate-400 leading-relaxed">
@@ -497,9 +505,9 @@ export default function CampusAmbassadorLandingPage() {
                 </p>
               </div>
 
-              <div className="glass-card p-6 rounded-2xl space-y-3 border-slate-700/40">
-                <div className="w-10 h-10 rounded-xl bg-slate-800 text-slate-300 flex items-center justify-center font-bold">
-                  🚀
+              <div className="glass-card p-6 rounded-2xl space-y-3 border-indigo-500/20">
+                <div className="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold">
+                  <Rocket className="w-5 h-5" />
                 </div>
                 <h3 className="font-display font-bold text-white text-base">Career Fast-Track</h3>
                 <p className="text-xs text-slate-400 leading-relaxed">
@@ -631,7 +639,7 @@ export default function CampusAmbassadorLandingPage() {
                         : 'glass-input text-slate-300 hover:text-white'
                     }`}
                   >
-                    <span>{cfg.badge}</span>
+                    <LevelBadgeIcon level={lvlKey} size="sm" />
                     <span>{cfg.name}</span>
                   </button>
                 );
@@ -649,7 +657,7 @@ export default function CampusAmbassadorLandingPage() {
                         <span>Tier Milestone</span>
                       </div>
                       <h3 className="text-3xl font-display font-black text-white flex items-center gap-3">
-                        <span>{current.badge}</span>
+                        <LevelBadgeIcon level={activeLevelTab} size="lg" />
                         <span>{current.name}</span>
                       </h3>
                       <p className="text-sm text-slate-300">

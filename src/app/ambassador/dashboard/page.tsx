@@ -24,6 +24,7 @@ import {
 import { dbService } from '@/lib/services/db';
 import { useAuth } from '@/lib/services/authContext';
 import { LEVEL_CONFIGS } from '@/lib/services/seedData';
+import { LevelBadgeIcon } from '@/components/ui/LevelBadgeIcon';
 import { AnnouncementRecord, Mission, EventItem } from '@/types';
 
 export default function AmbassadorDashboardPage() {
@@ -146,7 +147,7 @@ export default function AmbassadorDashboardPage() {
         <div className="mt-8 pt-6 border-t border-slate-800/80 space-y-2">
           <div className="flex items-center justify-between text-xs">
             <div className="flex items-center gap-2">
-              <span className="text-sm">{levelCfg.badge}</span>
+              <LevelBadgeIcon level={profile.level} size="sm" />
               <span className="font-bold text-white uppercase">{levelCfg.name}</span>
               <span className="text-slate-400">({profile.xp.toLocaleString()} XP)</span>
             </div>
