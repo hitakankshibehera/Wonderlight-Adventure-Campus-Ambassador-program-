@@ -145,8 +145,82 @@ export default function CampusAmbassadorLandingPage() {
               </div>
             </div>
           </div>
+
+          {/* Sticky Mobile Apply CTA */}
+          <div className="fixed bottom-4 left-4 right-4 z-50 sm:hidden">
+            <Link
+              href="/campus-ambassador/apply"
+              className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500 text-slate-950 font-display font-black text-xs uppercase tracking-wider shadow-2xl shadow-emerald-500/40 flex items-center justify-center gap-2"
+            >
+              <span>APPLY NOW FOR 2026-27</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
         </section>
       )}
+
+      {/* 1.5 IS THIS YOU? SECTION */}
+      <section className="py-20 relative bg-wonder-dark-950 border-b border-slate-800/80">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto space-y-3 mb-14">
+            <span className="text-xs font-bold text-amber-400 tracking-[0.2em] uppercase">WHO WE ARE LOOKING FOR</span>
+            <h2 className="text-3xl sm:text-4xl font-display font-black text-white tracking-tight uppercase">
+              ARE YOU A...
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+            <div className="glass-card p-6 rounded-2xl text-center space-y-3 border-emerald-500/20 hover:border-emerald-500/50 group">
+              <div className="w-12 h-12 mx-auto rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                🏔️
+              </div>
+              <h3 className="font-display font-bold text-white text-base">TRAVEL EXPLORER</h3>
+              <p className="text-xs text-slate-400">Passionate about mountains, trails, coastal trips, and outdoor life.</p>
+            </div>
+
+            <div className="glass-card p-6 rounded-2xl text-center space-y-3 border-teal-500/20 hover:border-teal-500/50 group">
+              <div className="w-12 h-12 mx-auto rounded-2xl bg-teal-500/10 text-teal-400 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                📸
+              </div>
+              <h3 className="font-display font-bold text-white text-base">CONTENT CREATOR</h3>
+              <p className="text-xs text-slate-400">Loves shooting travel reels, vlogs, photography, and storytelling.</p>
+            </div>
+
+            <div className="glass-card p-6 rounded-2xl text-center space-y-3 border-cyan-500/20 hover:border-cyan-500/50 group">
+              <div className="w-12 h-12 mx-auto rounded-2xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                👑
+              </div>
+              <h3 className="font-display font-bold text-white text-base">CAMPUS LEADER</h3>
+              <p className="text-xs text-slate-400">Active in student council, fests, societies, and college clubs.</p>
+            </div>
+
+            <div className="glass-card p-6 rounded-2xl text-center space-y-3 border-amber-500/20 hover:border-amber-500/50 group">
+              <div className="w-12 h-12 mx-auto rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                🌐
+              </div>
+              <h3 className="font-display font-bold text-white text-base">NETWORK BUILDER</h3>
+              <p className="text-xs text-slate-400">Naturally connects people, manages WhatsApp groups, and drives community.</p>
+            </div>
+
+            <div className="glass-card p-6 rounded-2xl text-center space-y-3 border-purple-500/20 hover:border-purple-500/50 group">
+              <div className="w-12 h-12 mx-auto rounded-2xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                💡
+              </div>
+              <h3 className="font-display font-bold text-white text-base">IDEA MAKER</h3>
+              <p className="text-xs text-slate-400">Enthusiastic about marketing campaigns, travel desks, and creative outreach.</p>
+            </div>
+          </div>
+
+          <div className="mt-10 text-center">
+            <Link
+              href="/campus-ambassador/apply"
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 font-display font-black text-xs uppercase tracking-wider shadow-glow-emerald hover:brightness-110 transition-all"
+            >
+              <span>THIS PROGRAM IS FOR YOU →</span>
+            </Link>
+          </div>
+        </div>
+      </section>
 
       {/* 2. ABOUT THE PROGRAM SECTION */}
       {sections.about && (

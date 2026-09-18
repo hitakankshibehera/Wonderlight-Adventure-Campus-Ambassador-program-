@@ -14,15 +14,24 @@ export const Navbar: React.FC = () => {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
 
-  const navLinks = [
-    { label: 'Overview', href: '/campus-ambassador' },
-    { label: 'Events', href: '/campus-ambassador/events', icon: Calendar },
-    { label: 'Results 2026', href: '/campus-ambassador/results', icon: Trophy, badge: 'New' },
-    { label: 'Leaderboard', href: '/campus-ambassador/leaderboard' },
-    { label: 'Rewards', href: '/campus-ambassador/rewards', icon: Gift },
+  const preLoginNavLinks = [
+    { label: 'PROGRAM', href: '/campus-ambassador' },
+    { label: 'HOW IT WORKS', href: '/campus-ambassador#how-it-works' },
+    { label: 'EVENTS', href: '/campus-ambassador/events' },
+    { label: 'MISSIONS', href: '/ambassador/missions' },
+    { label: 'REWARDS', href: '/campus-ambassador/rewards' },
+    { label: 'RESULTS', href: '/campus-ambassador/results', badge: 'New' },
     { label: 'FAQ', href: '/campus-ambassador/faq' },
-    { label: 'Status', href: '/campus-ambassador/application-status', icon: Search },
   ];
+
+  const postLoginNavLinks = [
+    { label: 'PROGRAM', href: '/campus-ambassador' },
+    { label: 'EVENTS', href: '/campus-ambassador/events' },
+    { label: 'MISSIONS', href: '/ambassador/missions' },
+    { label: 'RESULTS', href: '/campus-ambassador/results' },
+  ];
+
+  const navLinks = user ? postLoginNavLinks : preLoginNavLinks;
 
   const fullName = user?.displayName || user?.email || '';
   const firstName = fullName.split(' ')[0] || 'Student';
@@ -64,7 +73,7 @@ export const Navbar: React.FC = () => {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`relative px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${
+                  className={`relative px-3.5 py-2 rounded-lg text-xs font-bold tracking-wider transition-all ${
                     isActive
                       ? 'text-emerald-400 bg-emerald-500/10 shadow-sm'
                       : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
@@ -83,7 +92,7 @@ export const Navbar: React.FC = () => {
             })}
           </nav>
 
-          {/* Desktop Action Buttons / Dynamic User Profile (Requirement 5) */}
+          {/* Desktop Action Buttons / Dynamic User Profile */}
           <div className="hidden md:flex items-center gap-3">
             {user ? (
               <div className="relative">
@@ -97,7 +106,7 @@ export const Navbar: React.FC = () => {
                 </button>
 
                 {profileDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-56 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-2 z-50 animate-in fade-in zoom-in-95 space-y-1">
+                  <div className="absolute right-0 mt-2 w-60 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-2 z-50 animate-in fade-in zoom-in-95 space-y-1">
                     <div className="px-3 py-2 border-b border-slate-800/80 mb-1">
                       <div className="font-bold text-white text-xs truncate">{fullName}</div>
                       <div className="text-[10px] text-emerald-400 capitalize">{role.toLowerCase().replace('_', ' ')}</div>
@@ -108,7 +117,7 @@ export const Navbar: React.FC = () => {
                       onClick={() => setProfileDropdownOpen(false)}
                       className="block px-3 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
                     >
-                      View Profile / Status
+                      My Profile / Status
                     </Link>
 
                     <Link
@@ -128,11 +137,35 @@ export const Navbar: React.FC = () => {
                     </Link>
 
                     <Link
+                      href="/ambassador/campus"
+                      onClick={() => setProfileDropdownOpen(false)}
+                      className="block px-3 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+                    >
+                      My Campus
+                    </Link>
+
+                    <Link
                       href="/ambassador/events"
                       onClick={() => setProfileDropdownOpen(false)}
                       className="block px-3 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
                     >
                       My Events
+                    </Link>
+
+                    <Link
+                      href="/ambassador/missions"
+                      onClick={() => setProfileDropdownOpen(false)}
+                      className="block px-3 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+                    >
+                      My Missions
+                    </Link>
+
+                    <Link
+                      href="/ambassador/referrals"
+                      onClick={() => setProfileDropdownOpen(false)}
+                      className="block px-3 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+                    >
+                      My Referrals
                     </Link>
 
                     <Link
