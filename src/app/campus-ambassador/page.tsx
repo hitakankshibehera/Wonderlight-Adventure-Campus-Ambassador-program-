@@ -23,6 +23,7 @@ import {
   ArrowUpRight,
   Clock,
   Ticket,
+  Lock,
 } from 'lucide-react';
 import { dbService } from '@/lib/services/db';
 import { CMSConfig, EventItem, Mission, Ambassador } from '@/types';
@@ -82,11 +83,18 @@ export default function CampusAmbassadorLandingPage() {
 
           <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 text-center space-y-8">
             {/* Top Cohort Announcement Badge */}
-            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full glass-panel border border-emerald-500/30 text-emerald-400 text-xs sm:text-sm font-semibold shadow-glow-emerald shimmer-badge animate-in fade-in duration-500">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-              <img src="/wla-logo.png" alt="WLA Logo" className="w-5 h-5 rounded-full object-cover border border-emerald-400/60 animate-pulse" />
-              <span>Applications Open • Cohort {cms.programBatch || '2026–27'} • Pan India</span>
-            </div>
+            {cms.applicationsOpen !== false ? (
+              <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full glass-panel border border-emerald-500/30 text-emerald-400 text-xs sm:text-sm font-semibold shadow-glow-emerald shimmer-badge animate-in fade-in duration-500">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                <img src="/wla-logo.png" alt="WLA Logo" className="w-5 h-5 rounded-full object-cover border border-emerald-400/60 animate-pulse" />
+                <span>Applications Open • Cohort {cms.programBatch || '2026–27'} • Pan India</span>
+              </div>
+            ) : (
+              <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full glass-panel border border-rose-500/40 text-rose-300 text-xs sm:text-sm font-semibold animate-in fade-in duration-500 bg-rose-950/30">
+                <Lock className="w-4 h-4 text-rose-400" />
+                <span>Registrations Currently Closed • Cohort {cms.programBatch || '2026–27'}</span>
+              </div>
+            )}
 
             {/* Main Brand Title & Headings */}
             <div className="space-y-4">
@@ -109,13 +117,23 @@ export default function CampusAmbassadorLandingPage() {
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-              <Link
-                href="/campus-ambassador/apply"
-                className="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-400 text-slate-950 font-display font-extrabold text-sm sm:text-base tracking-wider uppercase shadow-glow-emerald hover:brightness-110 hover:scale-[1.02] transition-all flex items-center justify-center gap-2.5"
-              >
-                <span>APPLY NOW FOR 2026-27</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
+              {cms.applicationsOpen !== false ? (
+                <Link
+                  href="/campus-ambassador/apply"
+                  className="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-400 text-slate-950 font-display font-extrabold text-sm sm:text-base tracking-wider uppercase shadow-glow-emerald hover:brightness-110 hover:scale-[1.02] transition-all flex items-center justify-center gap-2.5"
+                >
+                  <span>APPLY NOW FOR 2026-27</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              ) : (
+                <Link
+                  href="/campus-ambassador/apply"
+                  className="w-full sm:w-auto px-8 py-4 rounded-xl bg-rose-500/10 border border-rose-500/40 text-rose-300 font-display font-extrabold text-sm sm:text-base tracking-wider uppercase hover:bg-rose-500/20 transition-all flex items-center justify-center gap-2.5"
+                >
+                  <Lock className="w-4 h-4 text-rose-400" />
+                  <span>REGISTRATIONS CLOSED</span>
+                </Link>
+              )}
               <a
                 href="#about"
                 className="w-full sm:w-auto px-8 py-4 rounded-xl glass-panel text-white hover:bg-slate-800/80 font-display font-bold text-sm sm:text-base tracking-wider uppercase transition-all flex items-center justify-center gap-2"
@@ -904,12 +922,22 @@ export default function CampusAmbassadorLandingPage() {
             </div>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-              <Link
-                href="/campus-ambassador/apply"
-                className="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-display font-extrabold text-sm sm:text-base tracking-wider uppercase shadow-glow-emerald hover:brightness-110 hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
-              >
-                <span>BECOME A CAMPUS AMBASSADOR →</span>
-              </Link>
+              {cms.applicationsOpen !== false ? (
+                <Link
+                  href="/campus-ambassador/apply"
+                  className="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-display font-extrabold text-sm sm:text-base tracking-wider uppercase shadow-glow-emerald hover:brightness-110 hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
+                >
+                  <span>BECOME A CAMPUS AMBASSADOR →</span>
+                </Link>
+              ) : (
+                <Link
+                  href="/campus-ambassador/apply"
+                  className="w-full sm:w-auto px-8 py-4 rounded-xl bg-rose-500/10 border border-rose-500/40 text-rose-300 font-display font-extrabold text-sm sm:text-base tracking-wider uppercase hover:bg-rose-500/20 transition-all flex items-center justify-center gap-2"
+                >
+                  <Lock className="w-4 h-4 text-rose-400" />
+                  <span>REGISTRATIONS CLOSED</span>
+                </Link>
+              )}
               <Link
                 href="/campus-ambassador/events"
                 className="w-full sm:w-auto px-8 py-4 rounded-xl glass-panel text-white hover:bg-slate-800/80 font-display font-bold text-sm sm:text-base tracking-wider uppercase transition-all"

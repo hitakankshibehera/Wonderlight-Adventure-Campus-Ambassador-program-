@@ -37,6 +37,12 @@ export default function AdminCMSPage() {
     flashSuccess();
   };
 
+  const toggleApplicationsOpen = () => {
+    const updated = dbService.updateCMSConfig({ applicationsOpen: !config.applicationsOpen });
+    setConfig(updated);
+    flashSuccess();
+  };
+
   const handleSaveText = (e: React.FormEvent) => {
     e.preventDefault();
     dbService.updateCMSConfig({
@@ -105,6 +111,57 @@ export default function AdminCMSPage() {
             <span>Preview Website</span>
             <ExternalLink className="w-3.5 h-3.5" />
           </Link>
+        </div>
+      </div>
+
+      {/* MASTER APPLICATION FORM CONTROL CARD */}
+      <div className={`glass-panel rounded-3xl p-6 sm:p-8 border shadow-2xl transition-all ${
+        config.applicationsOpen
+          ? 'border-emerald-500/50 bg-gradient-to-r from-emerald-950/40 via-slate-900/90 to-slate-950'
+          : 'border-rose-500/50 bg-gradient-to-r from-rose-950/40 via-slate-900/90 to-slate-950'
+      }`}>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-2 max-w-xl">
+            <div className="flex items-center gap-2">
+              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                config.applicationsOpen ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+              }`}>
+                {config.applicationsOpen ? 'ONLINE • ACCEPTING APPLICATIONS' : 'OFFLINE • REGISTRATIONS CLOSED'}
+              </span>
+              <span className="text-slate-400 text-xs font-semibold">Super Admin Master Control</span>
+            </div>
+
+            <h2 className="text-xl sm:text-2xl font-display font-black text-white uppercase tracking-tight">
+              CAMPUS AMBASSADOR REGISTRATION FORM (&quot;APPLY NOW&quot;)
+            </h2>
+
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              {config.applicationsOpen
+                ? 'The registration form (/campus-ambassador/apply) is currently OPEN. Candidates across India can submit applications.'
+                : 'The registration form (/campus-ambassador/apply) is currently CLOSED. "Apply Now" buttons are updated and visitors see a closed notification banner.'}
+            </p>
+          </div>
+
+          <button
+            onClick={toggleApplicationsOpen}
+            className={`px-6 py-4 rounded-2xl font-display font-black text-xs sm:text-sm tracking-wider uppercase transition-all flex items-center justify-center gap-3 shadow-2xl cursor-pointer ${
+              config.applicationsOpen
+                ? 'bg-rose-500 hover:bg-rose-600 text-white shadow-rose-950/50 hover:scale-105'
+                : 'bg-emerald-500 hover:bg-emerald-600 text-slate-950 shadow-emerald-950/50 hover:scale-105'
+            }`}
+          >
+            {config.applicationsOpen ? (
+              <>
+                <ToggleRight className="w-6 h-6 text-white" />
+                <span>CLOSE REGISTRATION FORM NOW</span>
+              </>
+            ) : (
+              <>
+                <ToggleLeft className="w-6 h-6 text-slate-950" />
+                <span>OPEN REGISTRATION FORM NOW</span>
+              </>
+            )}
+          </button>
         </div>
       </div>
 

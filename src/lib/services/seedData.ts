@@ -93,6 +93,7 @@ export const INITIAL_SELECTION_BATCHES: SelectionBatchRecord[] = [];
 export const INITIAL_AUDIT_LOGS: AuditLogRecord[] = [];
 
 export const INITIAL_CMS_CONFIG: CMSConfig = {
+  applicationsOpen: true,
   heroHeadline: 'WONDERLIGHT CAMPUS AMBASSADOR PROGRAM',
   heroSubheadline: 'Travel. Lead. Explore. Earn.',
   primaryTagline: 'Become the official student representative of Wonderlight Adventure at your campus.',

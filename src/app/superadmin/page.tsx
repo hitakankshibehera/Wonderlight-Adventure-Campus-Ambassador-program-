@@ -4,7 +4,8 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/services/authContext';
-import { ShieldCheck, Mail, Lock, ArrowRight, AlertCircle, CheckCircle2, Loader2, Sparkles, KeyRound, ShieldAlert } from 'lucide-react';
+import { ShieldCheck, Mail, Lock, ArrowRight, AlertCircle, CheckCircle2, Loader2, Sparkles, KeyRound, ShieldAlert, ToggleLeft, ToggleRight } from 'lucide-react';
+import { dbService } from '@/lib/services/db';
 
 export default function SuperAdminPage() {
   const router = useRouter();
@@ -15,6 +16,18 @@ export default function SuperAdminPage() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [cmsConfig, setCmsConfig] = useState(dbService.getCMSConfig());
+
+  React.useEffect(() => {
+    const refresh = () => setCmsConfig(dbService.getCMSConfig());
+    refresh();
+    return dbService.subscribe(refresh);
+  }, []);
+
+  const toggleApplications = () => {
+    const updated = dbService.updateCMSConfig({ applicationsOpen: !cmsConfig.applicationsOpen });
+    setCmsConfig(updated);
+  };
 
   const isAdmin = user && ['SUPER_ADMIN', 'PROGRAM_MANAGER', 'EVENT_MANAGER', 'MARKETING_MANAGER', 'FINANCE_MANAGER', 'MODERATOR'].includes(user.role);
 
@@ -102,6 +115,50 @@ export default function SuperAdminPage() {
                 <p className="text-xs text-slate-300">
                   Logged in: <strong className="text-emerald-400">{user.email}</strong>
                 </p>
+              </div>
+
+              {/* Quick Registration Form Toggle */}
+              <div className={`p-4 rounded-2xl border text-left space-y-2 transition-all ${
+                cmsConfig.applicationsOpen
+                  ? 'bg-emerald-950/40 border-emerald-500/40'
+                  : 'bg-rose-950/40 border-rose-500/40'
+              }`}>
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-300">
+                    Registration Form (&quot;Apply Now&quot;)
+                  </span>
+                  <span className={`text-[9px] font-black px-2 py-0.5 rounded-full ${
+                    cmsConfig.applicationsOpen ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'
+                  }`}>
+                    {cmsConfig.applicationsOpen ? 'FORM OPEN' : 'FORM CLOSED'}
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-400">
+                  {cmsConfig.applicationsOpen
+                    ? 'Students can currently access and submit applications.'
+                    : 'Registration form is disabled. Visitors see a closed notice.'}
+                </p>
+                <button
+                  type="button"
+                  onClick={toggleApplications}
+                  className={`w-full py-2.5 rounded-xl font-bold text-xs uppercase transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                    cmsConfig.applicationsOpen
+                      ? 'bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40'
+                      : 'bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40'
+                  }`}
+                >
+                  {cmsConfig.applicationsOpen ? (
+                    <>
+                      <ToggleRight className="w-4 h-4" />
+                      <span>CLOSE REGISTRATIONS NOW</span>
+                    </>
+                  ) : (
+                    <>
+                      <ToggleLeft className="w-4 h-4" />
+                      <span>OPEN REGISTRATIONS NOW</span>
+                    </>
+                  )}
+                </button>
               </div>
 
               <div className="pt-2 space-y-3">

@@ -18,14 +18,23 @@ import {
   Search,
   ExternalLink,
   ShieldCheck,
+  Lock,
+  Clock,
 } from 'lucide-react';
 import { dbService } from '@/lib/services/db';
 import { EmailOtpVerification } from '@/components/auth/EmailOtpVerification';
 import { Applicant } from '@/types';
 
 export default function ApplicationPage() {
+  const [cmsConfig, setCmsConfig] = useState(dbService.getCMSConfig());
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  React.useEffect(() => {
+    const refresh = () => setCmsConfig(dbService.getCMSConfig());
+    refresh();
+    return dbService.subscribe(refresh);
+  }, []);
   const [submittedApplicationId, setSubmittedApplicationId] = useState<string | null>(null);
   const [emailVerified, setEmailVerified] = useState(false);
 
@@ -212,6 +221,62 @@ export default function ApplicationPage() {
       setIsSubmitting(false);
     }
   };
+
+  if (cmsConfig.applicationsOpen === false) {
+    return (
+      <div className="min-h-screen py-16 px-4 sm:px-6 lg:px-8 max-w-3xl mx-auto font-sans flex items-center justify-center">
+        <div className="glass-panel p-8 sm:p-12 rounded-3xl border border-rose-500/40 shadow-2xl space-y-8 text-center bg-gradient-to-b from-slate-900/95 via-slate-950/95 to-slate-900/95 relative overflow-hidden">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-rose-500/10 blur-3xl pointer-events-none" />
+
+          <div className="w-20 h-20 mx-auto rounded-full bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400 shadow-glow-rose animate-bounce">
+            <Lock className="w-10 h-10" />
+          </div>
+
+          <div className="space-y-3">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-bold uppercase tracking-wider">
+              <Clock className="w-3.5 h-3.5" />
+              <span>REGISTRATIONS TEMPORARILY CLOSED</span>
+            </div>
+
+            <h1 className="text-2xl sm:text-4xl font-display font-black text-white uppercase tracking-tight">
+              REGISTRATIONS CLOSED FOR COHORT {cmsConfig.programBatch || '2026–27'}
+            </h1>
+
+            <p className="text-slate-300 text-sm sm:text-base max-w-lg mx-auto leading-relaxed">
+              Thank you for your immense enthusiasm! Student applications for the current Campus Ambassador cohort are currently closed or under administrative review by Wonderlight Adventure.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 text-xs text-slate-400 space-y-1">
+            <div className="font-semibold text-white">Already applied for Cohort {cmsConfig.programBatch || '2026–27'}?</div>
+            <p>You can check your application timeline, shortlisted state, or official selection results anytime using the buttons below.</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+            <Link
+              href="/campus-ambassador/application-status"
+              className="py-3.5 px-5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold text-xs uppercase tracking-wider shadow-glow-emerald hover:brightness-110 transition-all flex items-center justify-center gap-2"
+            >
+              <Search className="w-4 h-4" />
+              <span>TRACK MY APPLICATION STATUS</span>
+            </Link>
+
+            <Link
+              href="/campus-ambassador/results"
+              className="py-3.5 px-5 rounded-xl glass-input text-white font-bold text-xs uppercase tracking-wider hover:bg-slate-800 transition-all flex items-center justify-center gap-2"
+            >
+              <Sparkles className="w-4 h-4 text-amber-400" />
+              <span>VIEW SELECTION RESULTS</span>
+            </Link>
+          </div>
+
+          <div className="pt-4 border-t border-slate-800 text-xs text-slate-500 flex items-center justify-center gap-4">
+            <span>Questions? Contact us at <strong className="text-emerald-400">{cmsConfig.contactEmail || 'wonderlightadventure@gmail.com'}</strong></span>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const stepsList = [
     { num: 1, label: 'Email OTP', icon: ShieldCheck },

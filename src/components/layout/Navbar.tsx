@@ -3,9 +3,10 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Compass, Menu, X, ArrowUpRight, ShieldCheck, User, Calendar, Trophy, Gift, FileText, Search, LogIn } from 'lucide-react';
+import { Compass, Menu, X, ArrowUpRight, ShieldCheck, User, Calendar, Trophy, Gift, FileText, Search, LogIn, Lock } from 'lucide-react';
 import { useAuth } from '@/lib/services/authContext';
 import { AuthModal } from '@/components/auth/AuthModal';
+import { dbService } from '@/lib/services/db';
 
 export const Navbar: React.FC = () => {
   const pathname = usePathname();
@@ -13,6 +14,13 @@ export const Navbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const [cmsConfig, setCmsConfig] = useState(dbService.getCMSConfig());
+
+  React.useEffect(() => {
+    const refresh = () => setCmsConfig(dbService.getCMSConfig());
+    refresh();
+    return dbService.subscribe(refresh);
+  }, []);
 
   type NavItem = { label: string; href: string; badge?: string };
 
@@ -208,13 +216,23 @@ export const Navbar: React.FC = () => {
                   <span>LOGIN</span>
                 </button>
 
-                <Link
-                  href="/campus-ambassador/apply"
-                  className="relative group overflow-hidden px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold text-xs shadow-glow-emerald hover:brightness-110 transition-all flex items-center gap-1.5"
-                >
-                  <span>APPLY NOW</span>
-                  <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                </Link>
+                {cmsConfig.applicationsOpen !== false ? (
+                  <Link
+                    href="/campus-ambassador/apply"
+                    className="relative group overflow-hidden px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold text-xs shadow-glow-emerald hover:brightness-110 transition-all flex items-center gap-1.5"
+                  >
+                    <span>APPLY NOW</span>
+                    <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  </Link>
+                ) : (
+                  <Link
+                    href="/campus-ambassador/apply"
+                    className="relative group overflow-hidden px-3.5 py-2 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 font-bold text-xs hover:bg-rose-500/20 transition-all flex items-center gap-1.5"
+                  >
+                    <Lock className="w-3.5 h-3.5 text-rose-400" />
+                    <span>REGISTRATIONS CLOSED</span>
+                  </Link>
+                )}
               </>
             )}
 
@@ -295,14 +313,25 @@ export const Navbar: React.FC = () => {
                     <LogIn className="w-4 h-4" />
                     <span>4-Digit Code Login</span>
                   </button>
-                  <Link
-                    href="/campus-ambassador/apply"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-emerald-500 text-slate-950 text-xs font-bold shadow-glow-emerald"
-                  >
-                    <span>APPLY NOW FOR 2026-27</span>
-                    <ArrowUpRight className="w-4 h-4" />
-                  </Link>
+                  {cmsConfig.applicationsOpen !== false ? (
+                    <Link
+                      href="/campus-ambassador/apply"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-emerald-500 text-slate-950 text-xs font-bold shadow-glow-emerald"
+                    >
+                      <span>APPLY NOW FOR 2026-27</span>
+                      <ArrowUpRight className="w-4 h-4" />
+                    </Link>
+                  ) : (
+                    <Link
+                      href="/campus-ambassador/apply"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-bold"
+                    >
+                      <Lock className="w-4 h-4 text-rose-400" />
+                      <span>REGISTRATIONS CURRENTLY CLOSED</span>
+                    </Link>
+                  )}
                 </>
               )}
 

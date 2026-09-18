@@ -944,7 +944,10 @@ class DatabaseService {
 
   // --- CMS ---
   public getCMSConfig(): CMSConfig {
-    return { ...this.cmsConfig };
+    return {
+      ...this.cmsConfig,
+      applicationsOpen: this.cmsConfig.applicationsOpen !== undefined ? this.cmsConfig.applicationsOpen : true,
+    };
   }
 
   public updateCMSConfig(config: Partial<CMSConfig>): CMSConfig {

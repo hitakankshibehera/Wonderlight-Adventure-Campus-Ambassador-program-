@@ -356,6 +356,7 @@ export interface CMSSectionToggles {
 }
 
 export interface CMSConfig {
+  applicationsOpen: boolean;
   sections: CMSSectionToggles;
   heroHeadline: string;
   heroSubheadline: string;
